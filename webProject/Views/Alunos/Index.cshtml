@@ -1,0 +1,208 @@
+﻿@model IEnumerable<classProject.Models.Aluno>
+
+@{
+    ViewBag.Title = "Alunos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Alunos</h2>
+
+<h3>Cadastro de Aluno</h3>
+
+<form id="form">
+    <div class="form-row">
+        <div class="form-group" style="margin-left: -12px;">
+            <div class="col-md-3 col-sm-12 col-xs-12 form-group">
+                @Html.Label("Nome", htmlAttributes: new { @class = "ex3" })
+                @Html.Editor("Nome", new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-3 col-sm-12 col-xs-12 form-group">
+                @Html.Label("Sobrenome", htmlAttributes: new { @class = "ex3" })
+                @Html.Editor("Sobrenome", new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-4 col-sm-12 col-xs-12 form-group" style="width:100px;">
+                @Html.Label("Idade", htmlAttributes: new { @class = "ex3" })
+                @Html.Editor("Idade", new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div style="display:flex;">
+                <div class="col-md-12 col-sm-12 col-xs-12 form-group">
+                    @Html.Label("Email", htmlAttributes: new { @class = "ex3" })
+                    @Html.Editor("Email", new { htmlAttributes = new { @class = "form-control" } })
+                    <input type="button" id="Btn_Salvar" value="Salvar" class="action btn btn-success pull-right" style="margin-top: 15px" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<h3 style="margin-bottom:20px;">Alunos cadastrados:</h3>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Nome)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Sobrenome)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Idade)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Email)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td hidden id="idAluno">
+                @Html.DisplayFor(modelItem => item.AlunoID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nome)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Sobrenome)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Idade)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                <a id="btnEditar" onclick="editar(@item.AlunoID)">Editar</a> |
+                <a id="btnExcluir" onclick="excluir(@item.AlunoID)">Excluir</a>
+            </td>
+        </tr>
+    }
+
+</table>
+
+<a href="#" id="Btn_Voltar" class="btn btn-warning pull-right" style="margin-top: 15px; margin-right:15px;">Voltar</a>
+
+<script>
+    var controller = "/Alunos";
+
+    //Ao carregar a página, executa a função StartLocal()
+    $(document).ready(StartLocal);
+
+    //No escopo da StartLocal(), definir tudo que deverá ser carregado com a página
+    function StartLocal() {
+
+        //Retorna à página anterior
+        $("#Btn_Voltar").click(function () {
+            window.history.back();
+        });
+
+        //Salvar
+        $('#Btn_Salvar').on('click', function () {
+
+            var aluno = { // Enviando os valores dos campos
+                nome: $('#Nome').val(),
+                sobrenome: $('#Sobrenome').val(),
+                idade: $('#Idade').val(),
+                email: $('#Email').val(),
+                idAluno: $('#idAluno').val()
+            };
+
+            //Chamada do Ajax para trazer os detalhes da ordem
+            $.ajax({
+                url: controller + '/Cadastrar', //selecionando o endereço que iremos acessar no backend
+                type: 'POST', //selecionando o tipo de requesição, PUT,GET,POST,DELETE
+                data: aluno,
+                beforeSend: function () {
+                    //Caso você precise fazer alguma validação antes de enviar os dados
+                },
+                success: function () {
+                    //Em caso de sucesso, executa as funções:
+                    resetForm();
+                    exibirAlert();
+                    atualizaTabela(aluno);
+                },
+                error: function (err) {
+                    //Em caso de erro
+                    console.log(err);
+                }
+            });
+        });
+    };
+
+    //Editar
+    function editar(id) {
+        //Chamada do Ajax para trazer os detalhes da ordem
+        $.ajax({
+            url: controller + '/Editar/' + id, //selecionando o endereço que iremos acessar no backend
+            type: 'GET', //selecionando o tipo de requesição, PUT,GET,POST,DELETE
+            success: function (resposta) {
+                if (resposta.resultado) {
+                    $('#idAluno').val(resposta.aluno.AlunoID);
+                    $('#Nome').val(resposta.aluno.Nome);
+                    $('#Sobrenome').val(resposta.aluno.Sobrenome);
+                    $('#Idade').val(resposta.aluno.Idade);
+                    $('#Email').val(resposta.aluno.Email);
+                }
+            },
+            error: function (err) {
+                //Em caso de erro
+                console.log(err);
+            }
+        });
+    }
+
+    function excluir(id) {
+
+        var $tr = $(this).closest("tr");
+
+        //Chamada do Ajax para trazer os detalhes da ordem
+        $.ajax({
+            url: controller + '/Excluir/' + id, //selecionando o endereço que iremos acessar no backend
+            type: 'POST', //selecionando o tipo de requesição, PUT,GET,POST,DELETE
+            success: function (resposta) {
+                //if (resposta.resultado) {
+                //    $tr.fadeOut();
+                //}
+            },
+            error: function (err) {
+                //Em caso de erro
+                console.log(err);
+            }
+        });
+    }
+
+    //Apaga os inputs fo formulário com id = form
+    function resetForm() {
+        $(':input', '#form')
+            .not(':button, :submit, :reset, :hidden')
+            .val('')
+    }
+
+    //Exibe alerta ao cadastrar
+    function exibirAlert() {
+        alert('Cadastro realizado com sucesso!')
+    }
+
+    //Atualiza a tabela com o registro cadastrado
+    function atualizaTabela(data) {
+        $(".table").append(
+            `<tr>
+                <td> ${data.nome} </td>
+                <td> ${data.sobrenome} </td>
+                <td> ${data.idade} </td>
+                <td> ${data.email} </td>
+                <td> <a id="btnEditar" onclick="editar(${data.idAluno})"> Editar </a> | <a id="btnExcluir" onclick="excluir(${data.idAluno}"> Excluir </a> </td>
+            </tr>`);
+    }
+
+
+</script>

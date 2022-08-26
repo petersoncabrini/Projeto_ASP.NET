@@ -1,0 +1,39 @@
+﻿@model IEnumerable<classProject.Models.Curso>
+
+    @{
+    ViewBag.Title = "Cursos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+    <h2>Cursos</h2>
+
+    <p>
+        @Html.ActionLink("Cadastrar Curso", "Cadastrar")
+    </p>
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Nome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CargaHoraria)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nome)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CargaHoraria)
+            </td>
+            <td>
+                @Html.ActionLink("Editar", "Editar", new { id=item.CursoID }) |
+                @Html.ActionLink("Deletar", "Deletar", new { id=item.CursoID }, new { onclick = "return confirm('Deseja excluir esse curso?');" })
+            </td>
+        </tr>
+        }
+
+    </table>

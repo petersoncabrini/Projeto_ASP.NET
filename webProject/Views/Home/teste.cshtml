@@ -1,0 +1,17 @@
+﻿
+@{
+    ViewBag.Title = "testeSweetAlert";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <script src="sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="sweetalert2.min.css">
+}
+
+<h2>testeSweetAlert</h2>
+
+<button onclick="sweetAlert()">Teste</button>
+
+<script>
+    function sweetAlert() {
+        Swal.fire('Any fool can use a computer')
+    }
+</script>

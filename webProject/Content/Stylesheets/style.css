@@ -1,0 +1,17 @@
+﻿body {
+}
+
+#cards {
+    margin-top:3%;
+    display:flex;
+    justify-content:space-around;
+}
+
+.card {
+    text-align:justify;
+}
+
+.container .card .imagemCard{
+    width: 250px;
+    height:250px;
+}
