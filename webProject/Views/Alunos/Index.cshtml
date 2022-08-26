@@ -12,6 +12,9 @@
 <form id="form">
     <div class="form-row">
         <div class="form-group" style="margin-left: -12px;">
+
+            <input type="hidden" name="AlunoID" id="AlunoID" value="0"/>
+
             <div class="col-md-3 col-sm-12 col-xs-12 form-group">
                 @Html.Label("Nome", htmlAttributes: new { @class = "ex3" })
                 @Html.Editor("Nome", new { htmlAttributes = new { @class = "form-control" } })
@@ -65,9 +68,6 @@
     @foreach (var item in Model)
     {
         <tr>
-            <td hidden id="idAluno">
-                @Html.DisplayFor(modelItem => item.AlunoID)
-            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Nome)
             </td>
@@ -109,11 +109,11 @@
         $('#Btn_Salvar').on('click', function () {
 
             var aluno = { // Enviando os valores dos campos
+                alunoId: $('#AlunoID').val(),
                 nome: $('#Nome').val(),
                 sobrenome: $('#Sobrenome').val(),
                 idade: $('#Idade').val(),
-                email: $('#Email').val(),
-                idAluno: $('#idAluno').val()
+                email: $('#Email').val()
             };
 
             //Chamada do Ajax para trazer os detalhes da ordem
@@ -146,7 +146,7 @@
             type: 'GET', //selecionando o tipo de requesição, PUT,GET,POST,DELETE
             success: function (resposta) {
                 if (resposta.resultado) {
-                    $('#idAluno').val(resposta.aluno.AlunoID);
+                    $('#AlunoID').val(resposta.aluno.AlunoID);
                     $('#Nome').val(resposta.aluno.Nome);
                     $('#Sobrenome').val(resposta.aluno.Sobrenome);
                     $('#Idade').val(resposta.aluno.Idade);
@@ -200,7 +200,7 @@
                 <td> ${data.sobrenome} </td>
                 <td> ${data.idade} </td>
                 <td> ${data.email} </td>
-                <td> <a id="btnEditar" onclick="editar(${data.idAluno})"> Editar </a> | <a id="btnExcluir" onclick="excluir(${data.idAluno}"> Excluir </a> </td>
+                <td> <a id="btnEditar" onclick="editar(${data.alunoId})"> Editar </a> | <a id="btnExcluir" onclick="excluir(${data.alunoId}"> Excluir </a> </td>
             </tr>`);
     }
 
