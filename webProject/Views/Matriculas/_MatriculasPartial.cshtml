@@ -1,0 +1,20 @@
+﻿@model IEnumerable<classProject.Models.Matricula>
+
+@foreach (var item in Model)
+{
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Aluno.Nome)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Curso.Nome)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DataMatricula)
+        </td>
+        <td>
+            <a id="btnEditar" onclick="editar(@item.MatriculaID)">Editar</a> |
+            <a id="btnExcluir" onclick="excluir(@item.MatriculaID)">Excluir</a>
+        </td>
+    </tr>
+}

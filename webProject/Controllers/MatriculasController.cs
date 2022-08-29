@@ -17,21 +17,14 @@ namespace webProject.Controllers
 
         public ActionResult Index()
         {
+            ViewBag.Cursos = new SelectList(db.Cursos, "CursoID", "Nome");
+            ViewBag.Alunos = new SelectList(db.Alunos, "AlunoID", "Nome");
             var matriculas = (from s in db.Matriculas orderby s.MatriculaID select s).ToList<Matricula>();
             return View(matriculas);
         }
 
-        public ActionResult Cadastrar()
-        {
-            //Armazena os registros do banco na ViewBag, para serem carregadas no droplist na view.
-            ViewBag.Cursos = new SelectList(db.Cursos, "CursoID", "Nome");
-            ViewBag.Alunos = new SelectList(db.Alunos, "AlunoID", "Nome");
-            ViewBag.Titulo = "Cadastrar";
-            return View();
-        }
-
         [HttpPost]
-        public ActionResult Cadastrar(Matricula matricula)
+        public JsonResult Cadastrar(Matricula matricula)
         {
             try
             {
@@ -41,13 +34,11 @@ namespace webProject.Controllers
                     {
                         db.Matriculas.Add(matricula);
                         db.SaveChanges();
-                        return RedirectToAction("Index");
                     }
                     else
                     {
                         db.Entry(matricula).State = EntityState.Modified;
                         db.SaveChanges();
-                        return RedirectToAction("Index");
                     }
                 }
             }
@@ -55,35 +46,37 @@ namespace webProject.Controllers
             {
                 ViewBag.Message = "Erro";
             }
-            return View(matricula);
+            return Json(matricula.MatriculaID);
         }
 
-        //Recebe como parametro o id do actionlink na index
-        public ActionResult Editar(int id)
+        public JsonResult Editar(int id)
         {
-            ViewBag.Cursos = new SelectList(db.Cursos, "CursoID", "Nome");
-            ViewBag.Alunos = new SelectList(db.Alunos, "AlunoID", "Nome");
-            ViewBag.Titulo = "Editar";
-
-            //Faz uma consulta ao banco, selecionando na lista o id recebido como parametro
-            var matricula = (from s in db.Matriculas where s.MatriculaID == id select s).FirstOrDefault();
-            //Retorna o aluno encontrado com o respectivo id e exibe na view Editar
-            return View("Cadastrar", matricula);
+            try
+            {
+                Matricula matricula = db.Matriculas.Find(id);
+                return Json(new { resultado = true, matricula = matricula }, JsonRequestBehavior.AllowGet);
+            }
+            catch (DataException)
+            {
+                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
+                return Json(new { resultado = false }, JsonRequestBehavior.AllowGet);
+            }
         }
 
-        public ActionResult Deletar(int id)
+        public ActionResult Excluir(int id)
         {
             try
             {
                 Matricula matricula = db.Matriculas.Find(id);
                 db.Matriculas.Remove(matricula);
                 db.SaveChanges();
+                return Json(new { resultado = true, matricula = matricula }, JsonRequestBehavior.AllowGet);
             }
             catch (DataException)
             {
-                return RedirectToAction("Delete", new { id = id, saveChangesError = true });
+                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
+                return Json(new { resultado = false }, JsonRequestBehavior.AllowGet);
             }
-            return RedirectToAction("Index");
         }
 
     }

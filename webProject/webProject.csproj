@@ -187,6 +187,7 @@
     <Content Include="Views\Matriculas\Index.cshtml" />
     <Content Include="Views\Matriculas\Cadastrar.cshtml" />
     <Content Include="Views\Cursos\_CursosPartial.cshtml" />
+    <Content Include="Views\Matriculas\_MatriculasPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
