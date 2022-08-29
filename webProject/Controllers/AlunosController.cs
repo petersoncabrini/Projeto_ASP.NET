@@ -24,7 +24,7 @@ namespace webProject.Controllers
         }
 
         [HttpPost]
-        public ActionResult Cadastrar(Aluno aluno)
+        public JsonResult Cadastrar(Aluno aluno)
         {
             try
             {
@@ -34,13 +34,11 @@ namespace webProject.Controllers
                     {
                         db.Alunos.Add(aluno);
                         db.SaveChanges();
-                        return RedirectToAction("Index");
                     }
                     else
                     {
                         db.Entry(aluno).State = EntityState.Modified;
                         db.SaveChanges();
-                        return RedirectToAction("Index");
                     }
                 }
             }
@@ -49,18 +47,9 @@ namespace webProject.Controllers
                 ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
             }
 
-            return View(aluno);
+            return Json(aluno.AlunoID);
         }
 
-        //Recebe como parametro o id do actionlink na index
-        //public ActionResult Editar(int id)
-        //{
-        //    //Faz uma consulta ao banco, selecionando na lista o id recebido como parametro
-        //    var aluno = (from s in db.Alunos where s.AlunoID == id select s).FirstOrDefault();
-
-        //    //Retorna o aluno encontrado com o respectivo id e exibe na view Editar
-        //    return View("Index", aluno);
-        //}
 
         public ActionResult Excluir(int id)
         {
@@ -90,6 +79,11 @@ namespace webProject.Controllers
                 ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
                 return Json(new { resultado = false}, JsonRequestBehavior.AllowGet);
             }
+        }
+
+        public PartialViewResult AtualizarTabela()
+        {
+            return PartialView();
         }
 
     }

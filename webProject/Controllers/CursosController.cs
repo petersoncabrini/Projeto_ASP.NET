@@ -27,7 +27,7 @@ namespace webProject.Controllers
         }
 
         [HttpPost]
-        public ActionResult Cadastrar(Curso curso)
+        public JsonResult Cadastrar(Curso curso)
         {
             try
             {
@@ -37,13 +37,11 @@ namespace webProject.Controllers
                     {
                         db.Cursos.Add(curso);
                         db.SaveChanges();
-                        return RedirectToAction("Index");
                     }
                     else
                     {
                         db.Entry(curso).State = EntityState.Modified;
                         db.SaveChanges();
-                        return RedirectToAction("Index");
                     }
                 }
             }
@@ -51,30 +49,37 @@ namespace webProject.Controllers
             {
                 ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
             }
-            return View(curso);
+            return Json(curso.CursoID);
         }
 
-        public ActionResult Editar(int id)
-        {
-
-            ViewBag.Titulo = "Editar";
-            var curso = (from s in db.Cursos where s.CursoID == id select s).FirstOrDefault();
-            return View("Cadastrar", curso);
-        }
-
-        public ActionResult Deletar(int id)
+        public ActionResult Excluir(int id)
         {
             try
             {
                 Curso curso = db.Cursos.Find(id);
                 db.Cursos.Remove(curso);
                 db.SaveChanges();
+                return Json(new { resultado = true, curso = curso }, JsonRequestBehavior.AllowGet);
             }
             catch (DataException)
             {
-                return RedirectToAction("Delete", new { id = id, saveChangesError = true });
+                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
+                return Json(new { resultado = false }, JsonRequestBehavior.AllowGet);
             }
-            return RedirectToAction("Index");
+        }
+
+        public JsonResult Editar(int id)
+        {
+            try
+            {
+                Curso curso = db.Cursos.Find(id);
+                return Json(new { resultado = true, curso = curso }, JsonRequestBehavior.AllowGet);
+            }
+            catch (DataException)
+            {
+                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
+                return Json(new { resultado = false }, JsonRequestBehavior.AllowGet);
+            }
         }
     }
 

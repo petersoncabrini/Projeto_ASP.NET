@@ -154,6 +154,7 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
+    <Content Include="Scripts\scripts.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
@@ -166,9 +167,8 @@
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\sweetalert2.all.min.js" />
     <Content Include="Views\Alunos\Index.cshtml" />
-    <Content Include="Views\Alunos\Cadastrar.cshtml" />
-    <Content Include="Views\Cursos\Cadastrar.cshtml" />
     <Content Include="Views\Home\teste.cshtml" />
+    <Content Include="Views\Alunos\_IndexPartial.cshtml" />
     <None Include="Views\Cursos\Index.cshtml" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -186,6 +186,7 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Matriculas\Index.cshtml" />
     <Content Include="Views\Matriculas\Cadastrar.cshtml" />
+    <Content Include="Views\Cursos\_CursosPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

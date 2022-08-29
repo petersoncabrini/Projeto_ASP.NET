@@ -1,0 +1,17 @@
+﻿@model IEnumerable<classProject.Models.Curso>
+
+@foreach (var item in Model)
+{
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Nome)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CargaHoraria)
+        </td>
+        <td>
+            <a id="btnEditar" onclick="editar(@item.CursoID)">Editar</a> |
+            <a id="btnExcluir" onclick="excluir(@item.CursoID)">Excluir</a>
+        </td>
+    </tr>
+}

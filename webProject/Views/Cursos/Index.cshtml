@@ -1,39 +1,127 @@
-﻿@model IEnumerable<classProject.Models.Curso>
+﻿
 
-    @{
+@{
     ViewBag.Title = "Cursos";
     Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 style="margin-bottom:50px;">Cursos</h2>
+
+<form id="form">
+    <div class="form-row">
+        <div class="form-group" style="margin-left: -12px;">
+
+            <input type="hidden" name="CursoID" id="CursoID" value="0" />
+
+            <div class="col-md-3 col-sm-12 col-xs-12 form-group">
+                @Html.Label("Nome", htmlAttributes: new { @class = "ex3" })
+                @Html.Editor("Nome", new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+        <div class="form-group">
+            <div style="display:flex;">
+                <div class="col-md-4 col-sm-12 col-xs-12 form-group" style="width:150px;">
+                    @Html.Label("Carga Horária", htmlAttributes: new { @class = "ex3" })
+                    @Html.Editor("CargaHoraria", new { htmlAttributes = new { @class = "form-control" } })
+                    <input type="button" id="Btn_Salvar" value="Salvar" class="action btn btn-success pull-right" style="margin-top: 15px" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+</form>
+
+<h3 style="margin-bottom:20px;">Cursos cadastrados:</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Carga Horária</th>
+        </tr>
+    </thead>
+    <tbody id="tabelaIndex">
+        @Html.Partial("_CursosPartial")
+    </tbody>
+</table>
+
+<a href="#" id="Btn_Voltar" class="btn btn-warning pull-right" style="margin-top: 15px; margin-right:15px;">Voltar</a>
+
+<script src="~/Scripts/scripts.js"></script>
+
+<script>
+
+    var controller = "/Cursos";
+
+    //Ao carregar a página, executa a função StartLocal()
+    $(document).ready(StartLocal);
+
+    //No escopo da StartLocal(), definir tudo que deverá ser carregado com a página
+    function StartLocal() {
+
+
+    };
+
+    //Salvar
+    $('#Btn_Salvar').on('click', function () {
+
+        var curso = { // Enviando os valores dos campos
+            cursoId: $('#CursoID').val(),
+            nome: $('#Nome').val(),
+            cargaHoraria: $('#CargaHoraria').val()
+        };
+
+        //Chamada do Ajax para trazer os detalhes da ordem
+        $.ajax({
+            url: controller + '/Cadastrar', //selecionando o endereço que iremos acessar no backend
+            type: 'POST', //selecionando o tipo de requesição, PUT,GET,POST,DELETE
+            data: curso,
+            beforeSend: function () {
+                //Caso você precise fazer alguma validação antes de enviar os dados
+            },
+            success: function (resposta) {
+                //Em caso de sucesso, executa as funções:
+                curso.cursoId = resposta;
+                resetForm();
+                exibirAlert();
+                addRegistro(curso)
+            },
+            error: function (err) {
+                //Em caso de erro
+                console.log(err);
+            }
+        });
+    });
+
+    //Editar
+    function editar(id) {
+        //Chamada do Ajax para trazer os detalhes da ordem
+        $.ajax({
+            url: controller + '/Editar/' + id, //selecionando o endereço que iremos acessar no backend
+            type: 'GET', //selecionando o tipo de requesição, PUT,GET,POST,DELETE
+            success: function (resposta) {
+                if (resposta.resultado) {
+                    $('#CursoID').val(resposta.curso.CursoID);
+                    $('#Nome').val(resposta.curso.Nome);
+                    $('#CargaHoraria').val(resposta.curso.CargaHoraria);
+                }
+            },
+            error: function (err) {
+                //Em caso de erro
+                console.log(err);
+            }
+        });
     }
 
-    <h2>Cursos</h2>
+    //Adiciona um registro na tabela
+    function addRegistro(curso, resposta) {
+        $(".table").append(
+            `<tr>
+                    <td> ${curso.nome} </td>
+                    <td> ${curso.cargaHoraria} </td>
+                    <td> <a id="btnEditar" onclick="editar(${curso.cursoId})"> Editar </a> | <a id="btnExcluir" onclick="excluir(${curso.cursoId})"> Excluir </a> </td>
+                </tr>`);
+    }
 
-    <p>
-        @Html.ActionLink("Cadastrar Curso", "Cadastrar")
-    </p>
-    <table class="table">
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nome)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CargaHoraria)
-            </th>
-            <th></th>
-        </tr>
+</script>
 
-        @foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CargaHoraria)
-            </td>
-            <td>
-                @Html.ActionLink("Editar", "Editar", new { id=item.CursoID }) |
-                @Html.ActionLink("Deletar", "Deletar", new { id=item.CursoID }, new { onclick = "return confirm('Deseja excluir esse curso?');" })
-            </td>
-        </tr>
-        }
-
-    </table>

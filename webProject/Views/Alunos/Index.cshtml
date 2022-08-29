@@ -1,19 +1,15 @@
-﻿@model IEnumerable<classProject.Models.Aluno>
-
-@{
+﻿@{
     ViewBag.Title = "Alunos";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Alunos</h2>
-
-<h3>Cadastro de Aluno</h3>
+<h2 style="margin-bottom:50px;">Alunos</h2>
 
 <form id="form">
     <div class="form-row">
         <div class="form-group" style="margin-left: -12px;">
 
-            <input type="hidden" name="AlunoID" id="AlunoID" value="0"/>
+            <input type="hidden" name="AlunoID" id="AlunoID" value="0" />
 
             <div class="col-md-3 col-sm-12 col-xs-12 form-group">
                 @Html.Label("Nome", htmlAttributes: new { @class = "ex3" })
@@ -49,49 +45,25 @@
 <h3 style="margin-bottom:20px;">Alunos cadastrados:</h3>
 
 <table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Nome)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Sobrenome)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Idade)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Email)
-        </th>
-        <th></th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
+    <thead>
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Sobrenome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Idade)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                <a id="btnEditar" onclick="editar(@item.AlunoID)">Editar</a> |
-                <a id="btnExcluir" onclick="excluir(@item.AlunoID)">Excluir</a>
-            </td>
+            <th>Nome</th>
+            <th>Sobrenome</th>
+            <th>Idade</th>
+            <th>Email</th>
         </tr>
-    }
-
+    </thead>
+    <tbody id="tabelaIndex">
+        @Html.Partial("_IndexPartial")
+    </tbody>
 </table>
 
 <a href="#" id="Btn_Voltar" class="btn btn-warning pull-right" style="margin-top: 15px; margin-right:15px;">Voltar</a>
 
+<script src="~/Scripts/scripts.js"></script>
+
 <script>
+
     var controller = "/Alunos";
 
     //Ao carregar a página, executa a função StartLocal()
@@ -100,43 +72,41 @@
     //No escopo da StartLocal(), definir tudo que deverá ser carregado com a página
     function StartLocal() {
 
-        //Retorna à página anterior
-        $("#Btn_Voltar").click(function () {
-            window.history.back();
-        });
 
-        //Salvar
-        $('#Btn_Salvar').on('click', function () {
-
-            var aluno = { // Enviando os valores dos campos
-                alunoId: $('#AlunoID').val(),
-                nome: $('#Nome').val(),
-                sobrenome: $('#Sobrenome').val(),
-                idade: $('#Idade').val(),
-                email: $('#Email').val()
-            };
-
-            //Chamada do Ajax para trazer os detalhes da ordem
-            $.ajax({
-                url: controller + '/Cadastrar', //selecionando o endereço que iremos acessar no backend
-                type: 'POST', //selecionando o tipo de requesição, PUT,GET,POST,DELETE
-                data: aluno,
-                beforeSend: function () {
-                    //Caso você precise fazer alguma validação antes de enviar os dados
-                },
-                success: function () {
-                    //Em caso de sucesso, executa as funções:
-                    resetForm();
-                    exibirAlert();
-                    atualizaTabela(aluno);
-                },
-                error: function (err) {
-                    //Em caso de erro
-                    console.log(err);
-                }
-            });
-        });
     };
+
+    //Salvar
+    $('#Btn_Salvar').on('click', function () {
+
+        var aluno = { // Enviando os valores dos campos
+            alunoId: $('#AlunoID').val(),
+            nome: $('#Nome').val(),
+            sobrenome: $('#Sobrenome').val(),
+            idade: $('#Idade').val(),
+            email: $('#Email').val()
+        };
+
+        //Chamada do Ajax para trazer os detalhes da ordem
+        $.ajax({
+            url: controller + '/Cadastrar', //selecionando o endereço que iremos acessar no backend
+            type: 'POST', //selecionando o tipo de requesição, PUT,GET,POST,DELETE
+            data: aluno,
+            beforeSend: function () {
+                //Caso você precise fazer alguma validação antes de enviar os dados
+            },
+            success: function (resposta) {
+                //Em caso de sucesso, executa as funções:
+                aluno.alunoId = resposta;
+                resetForm();
+                exibirAlert();
+                addRegistro(aluno)
+            },
+            error: function (err) {
+                //Em caso de erro
+                console.log(err);
+            }
+        });
+    });
 
     //Editar
     function editar(id) {
@@ -160,49 +130,16 @@
         });
     }
 
-    function excluir(id) {
-
-        var $tr = $(this).closest("tr");
-
-        //Chamada do Ajax para trazer os detalhes da ordem
-        $.ajax({
-            url: controller + '/Excluir/' + id, //selecionando o endereço que iremos acessar no backend
-            type: 'POST', //selecionando o tipo de requesição, PUT,GET,POST,DELETE
-            success: function (resposta) {
-                //if (resposta.resultado) {
-                //    $tr.fadeOut();
-                //}
-            },
-            error: function (err) {
-                //Em caso de erro
-                console.log(err);
-            }
-        });
-    }
-
-    //Apaga os inputs fo formulário com id = form
-    function resetForm() {
-        $(':input', '#form')
-            .not(':button, :submit, :reset, :hidden')
-            .val('')
-    }
-
-    //Exibe alerta ao cadastrar
-    function exibirAlert() {
-        alert('Cadastro realizado com sucesso!')
-    }
-
-    //Atualiza a tabela com o registro cadastrado
-    function atualizaTabela(data) {
+    //Adiciona um registro na tabela
+    function addRegistro(aluno, resposta) {
         $(".table").append(
             `<tr>
-                <td> ${data.nome} </td>
-                <td> ${data.sobrenome} </td>
-                <td> ${data.idade} </td>
-                <td> ${data.email} </td>
-                <td> <a id="btnEditar" onclick="editar(${data.alunoId})"> Editar </a> | <a id="btnExcluir" onclick="excluir(${data.alunoId}"> Excluir </a> </td>
-            </tr>`);
+                    <td> ${aluno.nome} </td>
+                    <td> ${aluno.sobrenome} </td>
+                    <td> ${aluno.idade} </td>
+                    <td> ${aluno.email} </td>
+                    <td> <a id="btnEditar" onclick="editar(${aluno.alunoId})"> Editar </a> | <a id="btnExcluir" onclick="excluir(${aluno.alunoId})"> Excluir </a> </td>
+                </tr>`);
     }
-
 
 </script>
